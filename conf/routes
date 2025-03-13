@@ -11,7 +11,10 @@ GET     /api     controllers.ApplicationController.index
 POST    /api/create    controllers.ApplicationController.create
 
 # Application route read
-POST    /api/read/:id    controllers.ApplicationController.read(id: String)
+GET    /api/read/:id    controllers.ApplicationController.read(id: String)
 
 # Application route update
-POST    /api/update/:id    controllers.ApplicationController.update(id: String)
+PUT    /api/update/:id    controllers.ApplicationController.update(id: String)
+
+# Application route delete
+DELETE    /api/delete/:id    controllers.ApplicationController.delete(id: String)

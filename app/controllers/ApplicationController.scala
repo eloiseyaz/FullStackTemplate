@@ -13,4 +13,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def read(id: String) = TODO
 
   def update(id: String) = TODO
+
+  def delete(id: String) = TODO
+
 }
