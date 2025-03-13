@@ -11,4 +11,6 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def create() = TODO
 
   def read(id: String) = TODO
+
+  def update(id: String) = TODO
 }
