@@ -3,3 +3,18 @@ GET     /                           controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+# Application route (part 2, Create A New Controller 4)
+GET     /api     controllers.ApplicationController.index
+
+# Application route create
+POST    /api/create    controllers.ApplicationController.create
+
+# Application route read
+GET    /api/read/:id    controllers.ApplicationController.read(id: String)
+
+# Application route update
+PUT    /api/update/:id    controllers.ApplicationController.update(id: String)
+
+# Application route delete
+DELETE    /api/delete/:id    controllers.ApplicationController.delete(id: String)
