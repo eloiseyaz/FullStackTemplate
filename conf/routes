@@ -6,3 +6,6 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Application route (part 2, Create A New Controller 4)
 GET     /api     controllers.ApplicationController.index
+
+# Application route create
+POST    /api    controllers.ApplicationController.create
