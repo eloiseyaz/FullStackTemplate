@@ -1,4 +1,4 @@
-package models.DataModel
+package models
 
 import play.api.libs.json.{Json, OFormat}
 
