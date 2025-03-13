@@ -8,7 +8,7 @@ import play.api.test.Helpers._
 class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   val TestApplicationController = new ApplicationController(
-    component, repository
+    component, repository, executionContext
   )
 
   "ApplicationController .index" should {
