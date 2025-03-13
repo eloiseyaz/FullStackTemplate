@@ -8,4 +8,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /api     controllers.ApplicationController.index
 
 # Application route create
-POST    /api    controllers.ApplicationController.create
+POST    /api/create    controllers.ApplicationController.create
+
+# Application route read
+POST    /api/read/:id    controllers.ApplicationController.read(id: String)
