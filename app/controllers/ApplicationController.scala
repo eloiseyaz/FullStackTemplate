@@ -28,5 +28,5 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.delete(id).map(_ => Accepted)
-
+  }
 }
