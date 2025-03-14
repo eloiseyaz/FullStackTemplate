@@ -73,7 +73,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   "ApplicationController .update" should {
 
-    "find a book in the database by id" in {
+    "update a book in the database by id" in {
       beforeEach()
 
       val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
