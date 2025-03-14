@@ -23,7 +23,6 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     100
   )
 
-
   "ApplicationController .index" should {
 
     "return 200 OK" in {
@@ -49,25 +48,56 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
     }
+
+  /*  "return BadRequest if id already exists" in {
+      beforeEach()
+
+      val request: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
+
+      status(createdResult) shouldBe Status.CREATED
+
+      val badRequest: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
+      val badResult: Future[Result] = TestApplicationController.create()(badRequest)
+
+      println(status(badResult))
+      //val answer = status(badResult) shouldBe Status.BAD_REQUEST
+      //println(answer)
+      status(badResult) shouldBe Status.BAD_REQUEST
+
+      afterEach()
+    }*/ //can add later if we want to improve create :)
+
+    "return BadRequest if JSON is invalid" in {
+      beforeEach()
+
+      val invalidRequest = buildPost("/api").withBody[JsValue](Json.obj("invalidField" -> "value"))
+      val result = TestApplicationController.create()(invalidRequest)
+
+      status(result) shouldBe Status.BAD_REQUEST
+
+      afterEach()
+    }
+
   }
 
   "ApplicationController .read" should {
 
-      "find a book in the database by id" in {
-        beforeEach()
+    "find a book in the database by id" in {
+      beforeEach()
 
-        val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
-        val createdResult: Future[Result] = TestApplicationController.create()(request)
+      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
 
-        status(createdResult) shouldBe Status.CREATED
+      status(createdResult) shouldBe Status.CREATED
 
-        val readResult: Future[Result] = TestApplicationController.read("testId")(FakeRequest())
+      val readResult: Future[Result] = TestApplicationController.read("testId")(FakeRequest())
 
-        status(readResult) shouldBe Status.OK
-        contentAsJson(readResult).as[DataModel] shouldBe dataModel
+      status(readResult) shouldBe Status.OK
+      contentAsJson(readResult).as[DataModel] shouldBe dataModel
 
-        afterEach()
-      }
+      afterEach()
+    }
 
   }
 
