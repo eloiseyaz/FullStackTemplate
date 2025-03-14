@@ -23,6 +23,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
     100
   )
 
+
   "ApplicationController .index" should {
 
     "return 200 OK" in {
@@ -71,9 +72,30 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   }
 
   "ApplicationController .update" should {
-    beforeEach()
 
-    afterEach()
+    "find a book in the database by id" in {
+      beforeEach()
+
+      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
+
+      status(createdResult) shouldBe Status.CREATED
+
+      val updateDataModel: DataModel = DataModel(
+        "testId",
+        "Reverend Insanity",
+        "Waris's favourite book!",
+        100000
+      )
+      val updateRequest: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(updateDataModel))
+      val updateResult: Future[Result] = TestApplicationController.update("testId")(updateRequest)
+
+      status(updateResult) shouldBe Status.ACCEPTED
+      contentAsJson(updateResult).as[DataModel] shouldBe updateDataModel
+
+      afterEach()
+    }
+
   }
 
   "ApplicationController .delete" should {
