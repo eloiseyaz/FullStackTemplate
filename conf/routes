@@ -8,13 +8,13 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /api     controllers.ApplicationController.index
 
 # Application route create
-POST    /api/create    controllers.ApplicationController.create
+POST    /api    controllers.ApplicationController.create
 
 # Application route read
-GET    /api/read/:id    controllers.ApplicationController.read(id: String)
+GET    /api/:id    controllers.ApplicationController.read(id: String)
 
 # Application route update
-PUT    /api/update/:id    controllers.ApplicationController.update(id: String)
+PUT    /api/:id    controllers.ApplicationController.update(id: String)
 
 # Application route delete
-DELETE    /api/delete/:id    controllers.ApplicationController.delete(id: String)
+DELETE    /api/:id    controllers.ApplicationController.delete(id: String)
