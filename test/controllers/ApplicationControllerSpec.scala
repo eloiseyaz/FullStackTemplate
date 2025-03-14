@@ -99,6 +99,16 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
+/*    "return 404 NotFound for invalid ID" in {
+      beforeEach()
+
+      val readResult: Future[Result] = TestApplicationController.read("invalidId")(FakeRequest())
+
+      status(readResult) shouldBe Status.NOT_FOUND
+
+      afterEach()
+    }*/ //can use when we refactor .read with Eithers
+
   }
 
   "ApplicationController .update" should {
