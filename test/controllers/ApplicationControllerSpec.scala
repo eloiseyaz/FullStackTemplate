@@ -136,6 +136,30 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
+
+    //Double check it actually updates and returns bad request correctly
+    "return 400 bad request" in {
+      beforeEach()
+
+      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
+      val createdResult: Future[Result] = TestApplicationController.create()(request)
+
+      status(createdResult) shouldBe Status.CREATED
+      val invalidRequest = buildPost("/api").withBody[JsValue](Json.obj("invalidField" -> "value"))
+      val updateDataModel: DataModel = DataModel(
+        "testId",
+        "Reverend Insanity",
+        "Waris's favourite book!",
+        100000
+      )
+      val updateRequest: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.obj("invalidField" -> "value"))
+      val updateResult: Future[Result] = TestApplicationController.update("testId")(updateRequest)
+
+      status(updateResult) shouldBe Status.BAD_REQUEST
+
+      afterEach()
+    }
+
   }
 
   "ApplicationController .delete" should {
@@ -154,6 +178,19 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
     }
+
+    "return 404 NotFound bad request for invalid id" in {
+      beforeEach()
+
+      val deleteResult: Future[Result] = TestApplicationController.delete("invalidId")(FakeRequest())
+
+      status(deleteResult) shouldBe Status.NOT_FOUND
+
+      afterEach()
+      //Fix later and make it return 404 NotFound
+    }
+
+
 
   }
 
