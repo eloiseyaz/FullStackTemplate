@@ -41,4 +41,10 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.delete(id).map(_ => Accepted)
   }
+
+  def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
+    service.getGoogleBook(search = search, term = term).map {
+      ???
+    }
+  }
 }
