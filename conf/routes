@@ -18,3 +18,6 @@ PUT    /api/:id    controllers.ApplicationController.update(id: String)
 
 # Application route delete
 DELETE    /api/:id    controllers.ApplicationController.delete(id: String)
+
+#Application route read book from googleBook api
+   GET     /library/google/:search/:term      controllers.ApplicationController.getGoogleBook(search: String, term: String)
