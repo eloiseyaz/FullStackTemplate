@@ -26,7 +26,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
     }
   }
 
-  def read(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def read(id: String): Action[AnyContent] = Action.async {
     dataRepository.read(id).map(data => Ok {Json.toJson(data)})
   }
 
