@@ -138,23 +138,19 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
 
     //Double check it actually updates and returns bad request correctly
-    "return 400 bad request" in {
+    "return 400 BadRequest if JSON is invalid" in {
       beforeEach()
 
-      val request: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.toJson(dataModel))
-      val createdResult: Future[Result] = TestApplicationController.create()(request)
+      // First, create a book in the database
+      val createRequest: FakeRequest[JsValue] = buildPost("/api").withBody[JsValue](Json.toJson(dataModel))
+      val createResult: Future[Result] = TestApplicationController.create()(createRequest)
+      status(createResult) shouldBe Status.CREATED
 
-      status(createdResult) shouldBe Status.CREATED
-      val invalidRequest = buildPost("/api").withBody[JsValue](Json.obj("invalidField" -> "value"))
-      val updateDataModel: DataModel = DataModel(
-        "testId",
-        "Reverend Insanity",
-        "Waris's favourite book!",
-        100000
-      )
-      val updateRequest: FakeRequest[JsValue] = buildGet("/api/${dataModel._id}").withBody[JsValue](Json.obj("invalidField" -> "value"))
-      val updateResult: Future[Result] = TestApplicationController.update("testId")(updateRequest)
+      // Try to update the book with invalid JSON
+      val invalidRequest = buildPost("/api/testId").withBody[JsValue](Json.obj("invalidField" -> "value"))
+      val updateResult: Future[Result] = TestApplicationController.update("testId")(invalidRequest)
 
+      // response status should be 400 BadRequest
       status(updateResult) shouldBe Status.BAD_REQUEST
 
       afterEach()
@@ -179,7 +175,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-    "return 404 NotFound bad request for invalid id" in {
+    "return 404 NotFound for invalid ID" in {
       beforeEach()
 
       val deleteResult: Future[Result] = TestApplicationController.delete("invalidId")(FakeRequest())
@@ -187,7 +183,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(deleteResult) shouldBe Status.NOT_FOUND
 
       afterEach()
-      //Fix later and make it return 404 NotFound
+
     }
 
 
