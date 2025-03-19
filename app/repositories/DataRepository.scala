@@ -30,35 +30,53 @@ class DataRepository @Inject()(
       case _ => Left(APIError.BadAPIResponse(404, "Books cannot be found"))
     }
 
-  def create(book: DataModel): Future[DataModel] =
+  def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection
       .insertOne(book)
       .toFuture()
-      .map(_ => book)
+      .map(_ => Right(book))
+      .recover {
+        case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to create book: ${e.getMessage}"))
+      }
 
   private def byID(id: String): Bson =
     Filters.and(
       Filters.equal("_id", id)
     )
 
-  def read(id: String): Future[DataModel] =
-    collection.find(byID(id)).headOption flatMap {
-      case Some(data) =>
-        Future(data)
+  def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byID(id)).headOption.map {
+      case Some(data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, s"Book with ID $id not found"))
     }
 
-  def update(id: String, book: DataModel): Future[result.UpdateResult] =
+  def update(id: String, book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.replaceOne(
-      filter = byID(id),
-      replacement = book,
-      options = new ReplaceOptions().upsert(true) //What happens when we set this to false?
-    ).toFuture()
+        filter = byID(id),
+        replacement = book,
+        options = new ReplaceOptions().upsert(true)
+      ).toFuture()
+      .map(_ => Right(book))
+      .recover {
+        case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to update book: ${e.getMessage}"))
+      }
 
-  def delete(id: String): Future[result.DeleteResult] =
+  def delete(id: String): Future[Either[APIError.BadAPIResponse, String]] =
     collection.deleteOne(
-      filter = byID(id)
-    ).toFuture()
+        filter = byID(id)
+      ).toFuture()
+      .map(result =>
+        if (result.getDeletedCount > 0) Right(id)
+        else Left(APIError.BadAPIResponse(404, s"Book with ID $id not found or could not be deleted"))
+      )
+      .recover {
+        case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to delete book: ${e.getMessage}"))
+      }
 
-  def deleteAll(): Future[Unit] = collection.deleteMany(empty()).toFuture().map(_ => ()) //Hint: needed for tests
-
+  def deleteAll(): Future[Either[APIError.BadAPIResponse, Unit]] =
+    collection.deleteMany(empty()).toFuture()
+      .map(_ => Right(()))
+      .recover {
+        case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to delete all books: ${e.getMessage}"))
+      }
 }
