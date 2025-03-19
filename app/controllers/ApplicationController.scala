@@ -1,16 +1,18 @@
 package controllers
 
 import models.DataModel
+import play.api.libs.json.Format.GenericFormat
+import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
 import repositories.DataRepository
-import services.LibraryService
+import services.{LibraryService, RepositoryService}
 
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository, implicit val ec: ExecutionContext, val service: LibraryService) extends BaseController {
+class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository,val repositoryService: RepositoryService, implicit val ec: ExecutionContext, val service: LibraryService) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.index().map{
@@ -28,7 +30,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def read(id: String): Action[AnyContent] = Action.async {
-    dataRepository.read(id).map(data => Ok {Json.toJson(data)})
+    repositoryService.read(id).map(data => Ok {Json.toJson(data)})
   }
 
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
