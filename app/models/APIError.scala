@@ -12,15 +12,4 @@ object APIError {
       s"Bad response from upstream; Status: $upstreamStatus, Reason: $upstreamMessage"
     )
 
-  final case class NotFoundError(details: String)
-    extends APIError(
-      Status.NOT_FOUND,
-      s"Resource not found: $details"
-    )
-
-  final case class DatabaseError(details: String)
-    extends APIError(
-      Status.INTERNAL_SERVER_ERROR,
-      s"Database operation failed: $details"
-    )
 }
