@@ -15,7 +15,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def index(): Action[AnyContent] = Action.async { implicit request =>
     dataRepository.index().map{
       case Right(item: Seq[DataModel]) => Ok {Json.toJson(item)}
-      case Left(error) => Status(error)(Json.toJson("Unable to find any books"))
+      case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
   }
 
@@ -44,6 +44,9 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
-    service.getGoogleBook(search = search, term = term).map(bookData => Ok {Json.toJson(bookData)})
+    service.getGoogleBook(search = search, term = term).value.map {
+      case Right(book) => Ok(Json.toJson(book))
+      case Left(error) => Status(error.httpResponseStatus)(error.reason)
+    }
   }
 }
