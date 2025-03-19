@@ -57,18 +57,18 @@ class LibraryServiceSpec extends AnyWordSpec with Matchers with MockFactory with
     }
 
 
-//    "return an error" in {
-//      val url: String = "testUrl"
-//
-//      (mockConnector.get[???](_: ???)(_: OFormat[???], _: ???))
-//        .expects(url, *, *)
-//        .returning(???)// How do we return an error?
-//        .once()
-//
-//      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
-//        result shouldBe ???
-//      }
-//    }
+    "return an error" in {
+      val url: String = "testUrl"
+
+      (mockConnector.get[GoogleBooksResponse](_: String)(_: OFormat[GoogleBooksResponse], _: ExecutionContext))
+        .expects(url, *, *)
+        .returning(EitherT.leftT[Future, GoogleBooksResponse](APIError.BadAPIResponse(404, "error")))
+        .once()
+
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
+        result shouldBe Left(APIError.BadAPIResponse(404, "error"))
+      }
+    }
   }
 
 
