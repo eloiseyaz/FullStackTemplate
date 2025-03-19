@@ -51,7 +51,21 @@ class LibraryServiceSpec extends AnyWordSpec with Matchers with MockFactory with
           pageCount = 100
         )
 
-        result shouldBe expectedBook 
+        result shouldBe expectedBook
+      }
+    }
+
+
+    "return an error" in {
+      val url: String = "testUrl"
+
+      (mockConnector.get[???](_: ???)(_: OFormat[???], _: ???))
+        .expects(url, *, *)
+        .returning(???)// How do we return an error?
+        .once()
+
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
+        result shouldBe ???
       }
     }
   }
