@@ -1,7 +1,8 @@
 package services
 
+import cats.data.EitherT
 import connectors.LibraryConnector
-import models.{Book, GoogleBooksResponse}
+import models.{APIError, Book, GoogleBooksResponse}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
@@ -39,10 +40,10 @@ class LibraryServiceSpec extends AnyWordSpec with Matchers with MockFactory with
     "return a book" in {
       (mockConnector.get[GoogleBooksResponse](_: String)(_: OFormat[GoogleBooksResponse], _: ExecutionContext))
         .expects(url, *, *)
-        .returning(Future.successful(gameOfThronesResponse.as[GoogleBooksResponse]))
+        .returning(EitherT.rightT[Future, APIError](gameOfThronesResponse.as[GoogleBooksResponse]))
         .once()
 
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
+      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
         val expectedBook = Book(
           id = "someId",
           title = "A Game of Thrones",
@@ -51,23 +52,23 @@ class LibraryServiceSpec extends AnyWordSpec with Matchers with MockFactory with
           pageCount = 100
         )
 
-        result shouldBe expectedBook
+        result shouldBe Right(expectedBook)
       }
     }
 
 
-    "return an error" in {
-      val url: String = "testUrl"
-
-      (mockConnector.get[???](_: ???)(_: OFormat[???], _: ???))
-        .expects(url, *, *)
-        .returning(???)// How do we return an error?
-        .once()
-
-      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "")) { result =>
-        result shouldBe ???
-      }
-    }
+//    "return an error" in {
+//      val url: String = "testUrl"
+//
+//      (mockConnector.get[???](_: ???)(_: OFormat[???], _: ???))
+//        .expects(url, *, *)
+//        .returning(???)// How do we return an error?
+//        .once()
+//
+//      whenReady(testService.getGoogleBook(urlOverride = Some(url), search = "", term = "").value) { result =>
+//        result shouldBe ???
+//      }
+//    }
   }
 
 
