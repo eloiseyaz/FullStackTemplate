@@ -47,7 +47,10 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.delete(id).map(_ => Accepted)
+    repositoryService.delete(id).map{
+        case Right(book) => Accepted
+        case Left(error) => NotFound
+      }
   }
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
