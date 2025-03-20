@@ -13,10 +13,10 @@ import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val dataRepository: DataRepository,val repositoryService: RepositoryService, implicit val ec: ExecutionContext, val service: LibraryService) extends BaseController {
+class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val repositoryService: RepositoryService, implicit val ec: ExecutionContext, val service: LibraryService) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.index().map{
+    repositoryService.index().map{
       case Right(item: Seq[DataModel]) => Ok {Json.toJson(item)}
       case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
@@ -25,13 +25,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
-        dataRepository.create(dataModel).map(_ => Created)
+        repositoryService.create(dataModel).map(_ => Created)
       case JsError(_) => Future(BadRequest)
     }
   }
 
   def read(id: String): Action[AnyContent] = Action.async {
-    dataRepository.read(id).map {
+    repositoryService.read(id).map {
       case Right(book) => Ok(Json.toJson(book))
       case Left(error) => NotFound(Json.toJson(error))
     }
@@ -41,13 +41,13 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
-        dataRepository.update(id, dataModel).map(_ => Accepted {request.body}) //can also consider .read()
+        repositoryService.update(id, dataModel).map(_ => Accepted {request.body}) //can also consider .read()
       case JsError(_) => Future(BadRequest)
     }
   }
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.delete(id).map(_ => Accepted)
+    repositoryService.delete(id).map(_ => Accepted)
   }
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>

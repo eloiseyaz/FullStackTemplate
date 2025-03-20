@@ -24,5 +24,4 @@ class RepositoryService @Inject()(dataRepository: DataRepository)(implicit ec: E
   def delete(id: String): Future[Either[APIError.BadAPIResponse, String]] =
     dataRepository.delete(id)
 
-
 }
