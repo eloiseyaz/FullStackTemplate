@@ -175,7 +175,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-/*    "return 404 NotFound for invalid ID" in {
+    "return 404 NotFound for invalid ID" in {
       beforeEach()
 
       val deleteResult: Future[Result] = TestApplicationController.delete("invalidId")(FakeRequest())
@@ -184,7 +184,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
 
-    }*/
+    }
 
   }
 
