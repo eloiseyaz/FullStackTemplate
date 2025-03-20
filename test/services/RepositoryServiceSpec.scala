@@ -84,7 +84,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-    "return 404 NotFound for invalid ID" in {
+    "return 500 error for invalid ID" in {
       beforeEach()
 
       afterEach()
