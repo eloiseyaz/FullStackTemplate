@@ -1,6 +1,7 @@
 package controllers
 
 import models.DataModel
+import models.DataModel.formats
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
@@ -30,8 +31,12 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   }
 
   def read(id: String): Action[AnyContent] = Action.async {
-    repositoryService.read(id).map(data => Ok {Json.toJson(data)})
+    dataRepository.read(id).map {
+      case Right(book) => Ok(Json.toJson(book))
+      case Left(error) => NotFound(Json.toJson(error))
+    }
   }
+
 
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {

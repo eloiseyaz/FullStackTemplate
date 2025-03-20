@@ -1,6 +1,6 @@
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, Writes}
 
 case class DataModel(_id: String,
                      name: String,
@@ -9,6 +9,7 @@ case class DataModel(_id: String,
 
 object DataModel {
   implicit val formats: OFormat[DataModel] = Json.format[DataModel]
+  implicit val dataModelWrites: Writes[DataModel] = Json.writes[DataModel]
 }
 
 // New Google Books API models
