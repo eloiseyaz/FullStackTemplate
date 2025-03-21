@@ -126,17 +126,17 @@ class DataRepository @Inject()(
       }
     }
     catch {
-      case e: Throwable => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
+      case e: NumberFormatException => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
     }
   }
 
   def getDatabaseBook(search: String, field: String): Future[Either[APIError.BadAPIResponse, DataModel]] = {
-    field match {
+    field.toLowerCase match {
       case "id" => read(search)
       case "name" => readName(search)
       case "author" => readAuthor(search)
       case "description" => readDescription(search)
-      case "pageCount" => readPageCount(search)
+      case "pagecount" => readPageCount(search)
       case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
     }
   }
