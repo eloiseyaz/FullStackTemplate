@@ -125,6 +125,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       val updateDataModel: DataModel = DataModel(
         "testId",
         "Reverend Insanity",
+        "Waris",
         "Waris's favourite book!",
         100000
       )
