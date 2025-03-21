@@ -140,7 +140,7 @@ class DataRepository @Inject()(
 
 
 
-  def edit(id: String, field: String, replacement: String) = read(id).map {
+  def edit(id: String, field: String, replacement: String): Future[Either[APIError.BadAPIResponse, DataModel]] = read(id).flatMap {
     case Right(book) =>
       field.toLowerCase match {
         case "id" => {
@@ -165,12 +165,12 @@ class DataRepository @Inject()(
             update(id, editedBook)
           }
           catch {
-            case _: NumberFormatException => Left(APIError.BadAPIResponse(400, s"Invalid page count"))
+            case _: NumberFormatException => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
           }
         }
         case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
       }
-    case Left(error) => Left(error)
+    case Left(error) => Future(Left(error))
   }
 
 }
