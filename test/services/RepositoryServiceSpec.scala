@@ -21,7 +21,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-    "retun 404 error" in {
+    "return 404 error" in {
 
     }
   }
