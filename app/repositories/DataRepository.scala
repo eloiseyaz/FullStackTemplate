@@ -10,6 +10,7 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 @Singleton
 class DataRepository @Inject()(
@@ -126,7 +127,7 @@ class DataRepository @Inject()(
       }
     }
     catch {
-      case e: NumberFormatException => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
+      case _: NumberFormatException => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
     }
   }
 
@@ -139,6 +140,45 @@ class DataRepository @Inject()(
       case "pagecount" => readPageCount(search)
       case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
     }
+  }
+
+
+
+  def edit(id: String, field: String, replacement: String) = {
+    read(id).map {
+      case Right(book) => {
+        field.toLowerCase match {
+          case "id" => {
+            val editedBook = book.copy(_id = replacement)
+            update(id, editedBook)
+          }
+          case "name" => {
+            val editedBook =  book.copy(name = replacement)
+            update(id, editedBook)
+          }
+          case "author" => {
+            val editedBook =  book.copy(author = replacement)
+            update(id, editedBook)
+          }
+          case "description" => {
+            val editedBook =  book.copy(description = replacement)
+            update(id, editedBook)
+          }
+          case "pagecount" => {
+            try {
+              val editedBook =  book.copy(pageCount = replacement.toInt)
+              update(id, editedBook)
+            }
+            catch {
+              case _: NumberFormatException => Left(APIError.BadAPIResponse(400, s"Invalid page count"))
+            }
+          }
+          case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
+        }
+      }
+      case Left(error) => Left(error)
+    }
+
   }
 
 }

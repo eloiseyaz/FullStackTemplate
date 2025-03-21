@@ -66,4 +66,12 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
       case Left(error) => NotFound(Json.toJson(error))
     }
   }
+
+  def edit(id: String, field: String, replacement: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      repositoryService.edit(id = id, field = field, replacement = replacement).map{
+        case Right(book) => Ok(Json.toJson(book))
+        case Left(error) => NotFound(Json.toJson(error))
+      }
+  }
 }
