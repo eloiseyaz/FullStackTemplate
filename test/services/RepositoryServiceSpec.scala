@@ -3,15 +3,8 @@ package services
 import baseSpec.BaseSpecWithApplication
 import models.DataModel
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.FakeRequest
-import repositories.DataRepository
-import uk.gov.hmrc.mongo.MongoComponent
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 
 class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
