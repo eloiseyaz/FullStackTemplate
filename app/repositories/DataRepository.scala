@@ -32,11 +32,7 @@ class DataRepository @Inject()(
     }
 
   def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]] =
-    collection
-      .insertOne(book)
-      .toFuture()
-      .map(_ => Right(book))
-      .recover {
+    collection.insertOne(book).toFuture().map(_ => Right(book)).recover {
         case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to create book: ${e.getMessage}"))
       }
 
@@ -144,41 +140,37 @@ class DataRepository @Inject()(
 
 
 
-  def edit(id: String, field: String, replacement: String) = {
-    read(id).map {
-      case Right(book) => {
-        field.toLowerCase match {
-          case "id" => {
-            val editedBook = book.copy(_id = replacement)
-            update(id, editedBook)
-          }
-          case "name" => {
-            val editedBook =  book.copy(name = replacement)
-            update(id, editedBook)
-          }
-          case "author" => {
-            val editedBook =  book.copy(author = replacement)
-            update(id, editedBook)
-          }
-          case "description" => {
-            val editedBook =  book.copy(description = replacement)
-            update(id, editedBook)
-          }
-          case "pagecount" => {
-            try {
-              val editedBook =  book.copy(pageCount = replacement.toInt)
-              update(id, editedBook)
-            }
-            catch {
-              case _: NumberFormatException => Left(APIError.BadAPIResponse(400, s"Invalid page count"))
-            }
-          }
-          case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
+  def edit(id: String, field: String, replacement: String) = read(id).map {
+    case Right(book) =>
+      field.toLowerCase match {
+        case "id" => {
+          val editedBook = book.copy(_id = replacement)
+          update(id, editedBook)
         }
+        case "name" => {
+          val editedBook =  book.copy(name = replacement)
+          update(id, editedBook)
+        }
+        case "author" => {
+          val editedBook =  book.copy(author = replacement)
+          update(id, editedBook)
+        }
+        case "description" => {
+          val editedBook =  book.copy(description = replacement)
+          update(id, editedBook)
+        }
+        case "pagecount" => {
+          try {
+            val editedBook =  book.copy(pageCount = replacement.toInt)
+            update(id, editedBook)
+          }
+          catch {
+            case _: NumberFormatException => Left(APIError.BadAPIResponse(400, s"Invalid page count"))
+          }
+        }
+        case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
       }
-      case Left(error) => Left(error)
-    }
-
+    case Left(error) => Left(error)
   }
 
 }
