@@ -24,3 +24,6 @@ GET     /library/google/:search/:term      controllers.ApplicationController.get
 
 #Application route read from database by a field
 GET     /api/:search/:field     controllers.ApplicationController.getDatabaseBook(search: String, field: String)
+
+# Application route edit one field of an existing book
+PUT    /api/:id/:field/:replacement    controllers.ApplicationController.edit(id: String, field: String, replacement: String)
