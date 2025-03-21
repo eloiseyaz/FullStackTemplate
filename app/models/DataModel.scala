@@ -4,6 +4,7 @@ import play.api.libs.json.{Json, OFormat, Writes}
 
 case class DataModel(_id: String,
                      name: String,
+                     author: String,
                      description: String,
                      pageCount: Int)
 

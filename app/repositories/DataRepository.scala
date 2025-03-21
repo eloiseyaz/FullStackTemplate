@@ -82,7 +82,7 @@ class DataRepository @Inject()(
 
   private def byName(name: String): Bson =
     Filters.and(
-      Filters.equal("name", name)
+      Filters.regex("name", name, "i")
     )
 
   private def readName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
@@ -93,13 +93,24 @@ class DataRepository @Inject()(
 
   private def byDescription(description: String): Bson =
     Filters.and(
-      Filters.regex("description", description)
+      Filters.regex("description", description, "i")
     )
 
   private def readDescription(description: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.find(byDescription(description)).headOption.map {
       case Some(data) => Right(data)
       case None => Left(APIError.BadAPIResponse(404, s"Book with description $description not found"))
+    }
+
+  private def byAuthor(author: String): Bson =
+    Filters.and(
+      Filters.regex("author", author, "i")
+    )
+
+  private def readAuthor(author: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byAuthor(author)).headOption.map {
+      case Some(data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, s"Book with author $author not found"))
     }
 
   private def byPageCount(pageCount: Int): Bson =
@@ -123,11 +134,11 @@ class DataRepository @Inject()(
     field match {
       case "id" => read(search)
       case "name" => readName(search)
+      case "author" => readAuthor(search)
       case "description" => readDescription(search)
       case "pageCount" => readPageCount(search)
       case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
-      }
     }
-
   }
+
 }

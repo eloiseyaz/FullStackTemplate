@@ -19,6 +19,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   private val dataModel: DataModel = DataModel(
     "testId",
     "test name",
+    "test author",
     "test description",
     100
   )
