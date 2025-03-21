@@ -14,8 +14,8 @@ import scala.util.Success
 
 @Singleton
 class DataRepository @Inject()(
-                                mongoComponent: MongoComponent
-                              )(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel](
+  mongoComponent: MongoComponent
+)(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel](
   collectionName = "dataModels",
   mongoComponent = mongoComponent,
   domainFormat = DataModel.formats,
@@ -33,8 +33,8 @@ class DataRepository @Inject()(
 
   def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.insertOne(book).toFuture().map(_ => Right(book)).recover {
-        case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to create book: ${e.getMessage}"))
-      }
+      case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to create book: ${e.getMessage}"))
+    }
 
   private def byID(id: String): Bson =
     Filters.and(
@@ -139,36 +139,30 @@ class DataRepository @Inject()(
   }
 
 
-
   def edit(id: String, field: String, replacement: String): Future[Either[APIError.BadAPIResponse, DataModel]] = read(id).flatMap {
     case Right(book) =>
-      field.toLowerCase match {
-        case "id" => {
-          val editedBook = book.copy(_id = replacement)
-          update(id, editedBook)
-        }
-        case "name" => {
-          val editedBook =  book.copy(name = replacement)
-          update(id, editedBook)
-        }
-        case "author" => {
-          val editedBook =  book.copy(author = replacement)
-          update(id, editedBook)
-        }
-        case "description" => {
-          val editedBook =  book.copy(description = replacement)
-          update(id, editedBook)
-        }
-        case "pagecount" => {
+      val editedBook: Either[APIError.BadAPIResponse, DataModel] = field.toLowerCase match {
+        case "id" =>
+          Right(book.copy(_id = replacement))
+        case "name" =>
+          Right(book.copy(name = replacement))
+        case "author" =>
+          Right(book.copy(author = replacement))
+        case "description" =>
+          Right(book.copy(description = replacement))
+        case "pagecount" =>
           try {
-            val editedBook =  book.copy(pageCount = replacement.toInt)
-            update(id, editedBook)
+            Right(book.copy(pageCount = replacement.toInt))
           }
           catch {
-            case _: NumberFormatException => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
+            case _: NumberFormatException => Left(APIError.BadAPIResponse(400, s"Invalid page count"))
           }
-        }
-        case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
+        case x => Left(APIError.BadAPIResponse(400, s"Field '$x' not in data model"))
+      }
+
+      editedBook match {
+        case Right(book) => update(id, book)
+        case Left(error) => Future(Left(error))
       }
     case Left(error) => Future(Left(error))
   }

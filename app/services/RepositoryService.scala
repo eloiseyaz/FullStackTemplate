@@ -24,8 +24,10 @@ class RepositoryService @Inject()(dataRepository: DataRepository)(implicit ec: E
   def delete(id: String): Future[Either[APIError.BadAPIResponse, String]] =
     dataRepository.delete(id)
 
-  def getDatabaseBook(search: String, field: String): Future[Either[APIError.BadAPIResponse, DataModel]] = dataRepository.getDatabaseBook(search = search, field = field)
+  def getDatabaseBook(search: String, field: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    dataRepository.getDatabaseBook(search = search, field = field)
 
-  def edit(id: String, field: String, replacement: String) = dataRepository.edit(id = id, field = field, replacement = replacement)
+  def edit(id: String, field: String, replacement: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    dataRepository.edit(id = id, field = field, replacement = replacement)
 
 }
