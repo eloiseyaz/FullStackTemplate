@@ -79,4 +79,55 @@ class DataRepository @Inject()(
       .recover {
         case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to delete all books: ${e.getMessage}"))
       }
+
+  private def byName(name: String): Bson =
+    Filters.and(
+      Filters.equal("name", name)
+    )
+
+  private def readName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byName(name)).headOption.map {
+      case Some(data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, s"Book with name $name not found"))
+    }
+
+  private def byDescription(description: String): Bson =
+    Filters.and(
+      Filters.regex("description", description)
+    )
+
+  private def readDescription(description: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+    collection.find(byDescription(description)).headOption.map {
+      case Some(data) => Right(data)
+      case None => Left(APIError.BadAPIResponse(404, s"Book with description $description not found"))
+    }
+
+  private def byPageCount(pageCount: Int): Bson =
+    Filters.and(
+      Filters.equal("pageCount", pageCount)
+    )
+
+  private def readPageCount(pageCount: String): Future[Either[APIError.BadAPIResponse, DataModel]] = {
+    try {
+      collection.find(byPageCount(pageCount.toInt)).headOption.map {
+        case Some(data) => Right(data)
+        case None => Left(APIError.BadAPIResponse(404, s"Book with page count $pageCount not found"))
+      }
+    }
+    catch {
+      case e: Throwable => Future(Left(APIError.BadAPIResponse(400, s"Invalid page count")))
+    }
+  }
+
+  def getDatabaseBook(search: String, field: String): Future[Either[APIError.BadAPIResponse, DataModel]] = {
+    field match {
+      case "id" => read(search)
+      case "name" => readName(search)
+      case "description" => readDescription(search)
+      case "pageCount" => readPageCount(search)
+      case x => Future(Left(APIError.BadAPIResponse(400, s"Field $x not in data model")))
+      }
+    }
+
+  }
 }

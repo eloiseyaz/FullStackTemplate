@@ -59,4 +59,11 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
       case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
   }
+
+  def getDatabaseBook(search: String, field: String): Action[AnyContent] = Action.async { implicit request =>
+    repositoryService.getDatabaseBook(search = search, field = field).map{
+      case Right(book) => Ok(Json.toJson(book))
+      case Left(error) => NotFound(Json.toJson(error))
+    }
+  }
 }
