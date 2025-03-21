@@ -1,7 +1,7 @@
 package services
 
 import baseSpec.BaseSpecWithApplication
-import models.DataModel
+import models.{APIError, DataModel}
 import org.scalamock.scalatest.MockFactory
 
 import scala.concurrent.Future
@@ -23,7 +23,13 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
 
     "return 404 error" in {
+      (mockRepositoryService.index _)
+        .expects()
+        .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Books cannot be found"))))
 
+      whenReady(mockRepositoryService.index()) { result =>
+        result shouldBe Left(APIError.BadAPIResponse(404, "Books cannot be found"))
+      }
     }
   }
   //
