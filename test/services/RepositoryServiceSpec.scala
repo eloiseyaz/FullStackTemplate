@@ -3,17 +3,21 @@ package services
 import baseSpec.BaseSpecWithApplication
 import models.{APIError, Book, DataModel}
 import org.scalamock.scalatest.MockFactory
+import repositories.DataRepositoryTrait
 
 import scala.concurrent.Future
 
 
 class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
-  val mockRepositoryService: RepositoryService = mock[RepositoryService]
+
+
+  val mockDataRepositoryTrait: DataRepositoryTrait = mock[DataRepositoryTrait]
+  val mockRepositoryService: RepositoryService = new RepositoryService(mockDataRepositoryTrait)
 
   "RepositoryService .index" should {
 
     "return books" in {
-      (mockRepositoryService.index _)
+      (mockDataRepositoryTrait.index _)
         .expects()
         .returning(Future.successful(Right(Seq(DataModel("1", "name", "author", "description", 100)))))
 
@@ -23,7 +27,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
 
     "return 404 error" in {
-      (mockRepositoryService.index _)
+      (mockDataRepositoryTrait.index _)
         .expects()
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Books cannot be found"))))
 
@@ -38,7 +42,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "create a book in the database" in {
       beforeEach()
       val createdBook = DataModel("1", "name", "author", "description", 100)
-      (mockRepositoryService.create _)
+      (mockDataRepositoryTrait.create _)
         .expects(createdBook)
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -52,7 +56,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
       beforeEach()
 
       val createdBook = DataModel("1", "name", "author", "description", 100)
-      (mockRepositoryService.create _)
+      (mockDataRepositoryTrait.create _)
         .expects(*)
         .returning(Future.successful(Left(APIError.BadAPIResponse(500, "Book cannot be created"))))
 
@@ -70,7 +74,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "find a book in the database by id" in {
       beforeEach()
       val createdBook = DataModel("1", "name", "author", "description", 100)
-      (mockRepositoryService.read _)
+      (mockDataRepositoryTrait.read _)
         .expects(*)
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -85,7 +89,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "return 404 NotFound for invalid ID" in {
       beforeEach()
 
-      (mockRepositoryService.read _)
+      (mockDataRepositoryTrait.read _)
         .expects(*)
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Book ID not found"))))
 
@@ -105,7 +109,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
 
       val createdBook = DataModel("1", "name", "author", "description", 100)
       val updatedBook = DataModel("1", "ShadowSlave", "author", "description", 100)
-      (mockRepositoryService.update _)
+      (mockDataRepositoryTrait.update _)
         .expects(*, *)
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -119,7 +123,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "return 400 BadRequest if JSON is invalid" in {
       beforeEach()
       val createdBook = DataModel("1", "name", "author", "description", 100)
-      (mockRepositoryService.update _)
+      (mockDataRepositoryTrait.update _)
         .expects(*, *)
         .returning(Future.successful(Left(APIError.BadAPIResponse(400, "JSON is invalid"))))
 
@@ -136,7 +140,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
 
     "delete a book in the database by id" in {
       beforeEach()
-      (mockRepositoryService.delete _)
+      (mockDataRepositoryTrait.delete _)
         .expects(*)
         .returning(Future.successful(Right("1234")))
 
@@ -148,7 +152,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
 
     "return 404 error for invalid ID" in {
       beforeEach()
-      (mockRepositoryService.delete _)
+      (mockDataRepositoryTrait.delete _)
         .expects(*)
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Book ID not found"))))
 
@@ -160,7 +164,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
 
     "return 500 error failed to delete" in {
       beforeEach()
-      (mockRepositoryService.delete _)
+      (mockDataRepositoryTrait.delete _)
         .expects(*)
         .returning(Future.successful(Left(APIError.BadAPIResponse(500, "Failed to delete book"))))
 
@@ -177,7 +181,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "return book with correct id" in {
       beforeEach()
 
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "id")
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -192,7 +196,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     "return 404 NotFound for invalid ID" in {
       beforeEach()
 
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "id")
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Book ID not found"))))
 
@@ -204,7 +208,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
     "return book with correct name" in {
 
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "name")
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -214,7 +218,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
 
     "return 404 NotFound for invalid name" in {
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "name")
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Book name not found"))))
 
@@ -224,7 +228,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
     "return book with correct author" in {
 
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "author")
         .returning(Future.successful(Right(DataModel("1", "name", "author", "description", 100))))
 
@@ -234,7 +238,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
 
     "return 404 NotFound for invalid author" in {
-      (mockRepositoryService.getDatabaseBook _)
+      (mockDataRepositoryTrait.getDatabaseBook _)
         .expects(*, "name")
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Author name not found"))))
 
@@ -249,7 +253,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
 
     "return book with name field edited" in {
 
-      (mockRepositoryService.edit _)
+      (mockDataRepositoryTrait.edit _)
         .expects(*, *, *)
         .returning(Future.successful(Right(DataModel("0605", "ShadowSlave", "author", "description", 1000000))))
 
@@ -259,7 +263,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
     "return book with description field edited" in {
 
-      (mockRepositoryService.edit _)
+      (mockDataRepositoryTrait.edit _)
         .expects(*, *, *)
         .returning(Future.successful(Right(DataModel("0605", "ShadowSlave", "author", "Growing up in poverty, Sunny never expected anything good from life. " +
           "However, even he did not anticipate being chosen by the Nightmare Spell and becoming one of the Awakened - an elite group of people gifted with supernatural powers. " +
@@ -275,7 +279,7 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
     }
 
     "return 400 BadRequest when field is invalid" in {
-      (mockRepositoryService.edit _)
+      (mockDataRepositoryTrait.edit _)
         .expects(*, *, *)
         .returning(Future.successful(Left(APIError.BadAPIResponse(404, "Field is invalid"))))
 

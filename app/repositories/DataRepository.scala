@@ -1,5 +1,6 @@
 package repositories
 
+import com.google.inject.ImplementedBy
 import models.{APIError, DataModel}
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.Filters.empty
@@ -12,10 +13,47 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
+@ImplementedBy(classOf[DataRepository])
+trait DataRepositoryTrait {
+  def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]]
+
+  def create(book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def read(id: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def update(id: String, book: DataModel): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def delete(id: String): Future[Either[APIError.BadAPIResponse, String]]
+
+  def deleteAll(): Future[Either[APIError.BadAPIResponse, Unit]]
+
+  def byName(name: String): Bson
+
+  def readName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def byDescription(description: String): Bson
+
+  def readDescription(description: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def byAuthor(author: String): Bson
+
+  def readAuthor(author: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def byPageCount(pageCount: Int): Bson
+
+  def readPageCount(pageCount: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def getDatabaseBook(search: String, field: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+  def edit(id: String, field: String, replacement: String): Future[Either[APIError.BadAPIResponse, DataModel]]
+
+}
+
+
 @Singleton
 class DataRepository @Inject()(
-  mongoComponent: MongoComponent
-)(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel](
+                                mongoComponent: MongoComponent
+                              )(implicit ec: ExecutionContext) extends PlayMongoRepository[DataModel](
   collectionName = "dataModels",
   mongoComponent = mongoComponent,
   domainFormat = DataModel.formats,
@@ -23,7 +61,7 @@ class DataRepository @Inject()(
     Indexes.ascending("_id")
   )),
   replaceIndexes = false
-) {
+) with DataRepositoryTrait {
 
   def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]] =
     collection.find().toFuture().map {
@@ -77,45 +115,45 @@ class DataRepository @Inject()(
         case e: Exception => Left(APIError.BadAPIResponse(500, s"Failed to delete all books: ${e.getMessage}"))
       }
 
-  private def byName(name: String): Bson =
+  def byName(name: String): Bson =
     Filters.and(
       Filters.regex("name", name, "i")
     )
 
-  private def readName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+  def readName(name: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.find(byName(name)).headOption.map {
       case Some(data) => Right(data)
       case None => Left(APIError.BadAPIResponse(404, s"Book with name $name not found"))
     }
 
-  private def byDescription(description: String): Bson =
+  def byDescription(description: String): Bson =
     Filters.and(
       Filters.regex("description", description, "i")
     )
 
-  private def readDescription(description: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+  def readDescription(description: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.find(byDescription(description)).headOption.map {
       case Some(data) => Right(data)
       case None => Left(APIError.BadAPIResponse(404, s"Book with description $description not found"))
     }
 
-  private def byAuthor(author: String): Bson =
+  def byAuthor(author: String): Bson =
     Filters.and(
       Filters.regex("author", author, "i")
     )
 
-  private def readAuthor(author: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
+  def readAuthor(author: String): Future[Either[APIError.BadAPIResponse, DataModel]] =
     collection.find(byAuthor(author)).headOption.map {
       case Some(data) => Right(data)
       case None => Left(APIError.BadAPIResponse(404, s"Book with author $author not found"))
     }
 
-  private def byPageCount(pageCount: Int): Bson =
+  def byPageCount(pageCount: Int): Bson =
     Filters.and(
       Filters.equal("pageCount", pageCount)
     )
 
-  private def readPageCount(pageCount: String): Future[Either[APIError.BadAPIResponse, DataModel]] = {
+  def readPageCount(pageCount: String): Future[Either[APIError.BadAPIResponse, DataModel]] = {
     try {
       collection.find(byPageCount(pageCount.toInt)).headOption.map {
         case Some(data) => Right(data)

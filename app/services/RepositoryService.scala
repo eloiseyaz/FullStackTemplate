@@ -1,13 +1,13 @@
 package services
 
 import models.{APIError, DataModel}
-import repositories.DataRepository
+import repositories.{DataRepository, DataRepositoryTrait}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RepositoryService @Inject()(dataRepository: DataRepository)(implicit ec: ExecutionContext) {
+class RepositoryService @Inject()(dataRepository: DataRepositoryTrait)(implicit ec: ExecutionContext) {
 
   def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]] =
     dataRepository.index()
