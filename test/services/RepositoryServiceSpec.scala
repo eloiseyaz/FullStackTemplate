@@ -1,7 +1,7 @@
 package services
 
 import baseSpec.BaseSpecWithApplication
-import models.{APIError, DataModel}
+import models.{APIError, Book, DataModel}
 import org.scalamock.scalatest.MockFactory
 
 import scala.concurrent.Future
@@ -32,40 +32,57 @@ class RepositoryServiceSpec extends BaseSpecWithApplication with MockFactory {
       }
     }
   }
-  //
-  //  "RepositoryService .create" should {
-  //
-  //    "create a book in the database" in {
-  //      beforeEach()
-  //
-  //
-  //      afterEach()
-  //    }
-  //
-  //    "return 500 error" in {
-  //      beforeEach()
-  //
-  //      afterEach()
-  //    }
-  //
-  //  }
-  //
-  //  "RepositoryService .read" should {
-  //
-  //    "find a book in the database by id" in {
-  //      beforeEach()
-  //
-  //      afterEach()
-  //    }
-  //
-  //    "return 404 NotFound for invalid ID" in {
-  //      beforeEach()
-  //
-  //
-  //      afterEach()
-  //    }
-  //
-  //  }
+
+    "RepositoryService .create" should {
+
+      "create a book in the database" in {
+        beforeEach()
+        val createdBook = DataModel("1", "name", "author", "desc", 100)
+        (mockRepositoryService.create _)
+          .expects(createdBook)
+          .returning(Future.successful(Right(DataModel("1", "name", "author", "desc", 100))))
+
+        whenReady(mockRepositoryService.create(createdBook)) { result =>
+          result shouldBe Right(DataModel("1", "name", "author", "desc", 100))
+        }
+        afterEach()
+      }
+
+      "return 500 error" in {
+        beforeEach()
+
+        val createdBook = DataModel("1", "name", "author", "desc", 100)
+        (mockRepositoryService.create _)
+          .expects(*)
+          .returning(Future.successful(Left(APIError.BadAPIResponse(500, "Book cannot be created"))))
+
+        whenReady(mockRepositoryService.create(createdBook)) { result =>
+          result shouldBe Left(APIError.BadAPIResponse(500, "Book cannot be created"))
+        }
+
+        afterEach()
+      }
+
+    }
+
+    "RepositoryService .read" should {
+
+      "find a book in the database by id" in {
+        beforeEach()
+
+
+
+        afterEach()
+      }
+
+      "return 404 NotFound for invalid ID" in {
+        beforeEach()
+
+
+        afterEach()
+      }
+
+    }
   //
   //  "RepositoryService .update" should {
   //
