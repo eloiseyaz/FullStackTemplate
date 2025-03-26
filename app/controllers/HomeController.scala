@@ -24,5 +24,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     Future.successful(Ok(views.html.index()))
   }
+
 }
 
