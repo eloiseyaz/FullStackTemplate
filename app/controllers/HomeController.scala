@@ -1,29 +1,30 @@
 package controllers
 
-
-import play.api.mvc._
+import models.APIError
 
 import javax.inject._
-import scala.concurrent.Future
+import play.api.mvc._
+import services.{LibraryService, RepositoryService}
 
+import scala.concurrent.ExecutionContext
 
-/**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(val controllerComponents: ControllerComponents,
+                               repositoryService: RepositoryService)
+                              (implicit ec: ExecutionContext) extends BaseController {
 
-  /**
-   * Create an Action to render an HTML page.
-   *
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
-   */
-  def index(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(views.html.index()))
+  def index(): Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.index())
   }
 
+  def viewDatabaseBook(id: String): Action[AnyContent] = Action.async { implicit request =>
+    repositoryService.read(id).map {
+      case Right(book) => Ok(views.html.book(book))
+      case Left(error) =>
+        error match {
+          case APIError.BadAPIResponse(_, message) =>
+            NotFound(views.html.error(s"Book not found: $message"))
+        }
+    }
+  }
 }
-

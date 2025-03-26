@@ -29,7 +29,6 @@ GET     /api/:search/:field     controllers.ApplicationController.getDatabaseBoo
 PUT    /api/:id/:field/:replacement    controllers.ApplicationController.edit(id: String, field: String, replacement: String)
 
 # Application route to get and store a Google book by ISBN
-POST    /api/:isbn    controllers.ApplicationController.getAndStoreGoogleBookByISBN(isbn: String)
+POST   /api/:isbn    controllers.ApplicationController.getAndStoreGoogleBookByISBN(isbn: String)
 
-# Application route for frontend example
-GET     /example                           controllers.ApplicationController.example()
+GET /book/:id controllers.HomeController.viewDatabaseBook(id: String)

@@ -1,0 +1,97 @@
+:root {
+  --primary-color: #6b4226;
+  --secondary-color: #eae0d5;
+  --accent-color: #c19a6b;
+  --text-color: #3c2f2f;
+  --light-bg: #f8f4e9;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  color: var(--text-color);
+  background-color: var(--light-bg);
+  line-height: 1.6;
+}
+
+.book-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 25px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border-left: 5px solid var(--accent-color);
+}
+
+.book-container h1 {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.book-details {
+  margin: 25px 0;
+  padding: 20px;
+  background-color: var(--light-bg);
+  border-radius: 6px;
+  border: 1px solid var(--secondary-color);
+}
+
+.book-details p {
+  margin: 10px 0;
+}
+
+.book-details strong {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.book-description {
+  margin-top: 30px;
+}
+
+.book-description h2 {
+  color: var(--primary-color);
+  font-size: 1.4em;
+  margin-bottom: 15px;
+}
+
+.actions {
+  margin-top: 35px;
+  text-align: center;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 18px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.error-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 25px;
+  background-color: #fff8f8;
+  border-left: 5px solid #e74c3c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.error-message {
+  color: #c0392b;
+  font-weight: bold;
+}
