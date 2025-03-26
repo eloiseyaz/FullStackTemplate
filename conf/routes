@@ -27,3 +27,6 @@ GET     /api/:search/:field     controllers.ApplicationController.getDatabaseBoo
 
 # Application route edit one field of an existing book
 PUT    /api/:id/:field/:replacement    controllers.ApplicationController.edit(id: String, field: String, replacement: String)
+
+# Application route to get and store a Google book by ISBN
+POST   /api/:isbn    controllers.ApplicationController.getAndStoreGoogleBookByISBN(isbn: String)
