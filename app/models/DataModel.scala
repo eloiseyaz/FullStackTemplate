@@ -1,42 +1,44 @@
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, Writes}
 
 case class DataModel(_id: String,
                      name: String,
+                     author: String,
                      description: String,
                      pageCount: Int)
 
 object DataModel {
   implicit val formats: OFormat[DataModel] = Json.format[DataModel]
+  implicit val dataModelWrites: Writes[DataModel] = Json.writes[DataModel]
 }
 
 // New Google Books API models
 case class VolumeInfo(
-                       title: String,
-                       authors: Option[List[String]],
-                       description: Option[String],
-                       pageCount: Option[Int],
-                       publisher: Option[String],
-                       publishedDate: Option[String]
-                     )
+  title: String,
+  authors: Option[List[String]],
+  description: Option[String],
+  pageCount: Option[Int],
+  publisher: Option[String],
+  publishedDate: Option[String]
+)
 
 object VolumeInfo {
   implicit val format: OFormat[VolumeInfo] = Json.format[VolumeInfo]
 }
 
 case class Volume(
-                   id: String,
-                   volumeInfo: VolumeInfo
-                 )
+  id: String,
+  volumeInfo: VolumeInfo
+)
 
 object Volume {
   implicit val format: OFormat[Volume] = Json.format[Volume]
 }
 
 case class GoogleBooksResponse(
-                                items: List[Volume]
-                              )
+  items: List[Volume]
+)
 
 object GoogleBooksResponse {
   implicit val format: OFormat[GoogleBooksResponse] = Json.format[GoogleBooksResponse]
@@ -44,12 +46,14 @@ object GoogleBooksResponse {
 
 // Our simplified Book model that we'll convert to
 case class Book(
-                 id: String,
-                 title: String,
-                 authors: List[String],
-                 description: String,
-                 pageCount: Int
-               )
+  id: String,
+  title: String,
+  authors: List[String],
+  description: String,
+  pageCount: Int
+) {
+  def toDataModel: DataModel = DataModel(this.id, this.title, this.authors.head, this.description, this.pageCount)
+}
 
 object Book {
   implicit val format: OFormat[Book] = Json.format[Book]

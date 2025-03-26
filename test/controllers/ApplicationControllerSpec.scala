@@ -13,12 +13,13 @@ import scala.concurrent.Future
 class ApplicationControllerSpec extends BaseSpecWithApplication {
 
   val TestApplicationController = new ApplicationController(
-    component, repository, executionContext
+    component, repoService, executionContext, service
   )
 
   private val dataModel: DataModel = DataModel(
     "testId",
     "test name",
+    "test author",
     "test description",
     100
   )
@@ -99,7 +100,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-/*    "return 404 NotFound for invalid ID" in {
+    "return 404 NotFound for invalid ID" in {
       beforeEach()
 
       val readResult: Future[Result] = TestApplicationController.read("invalidId")(FakeRequest())
@@ -107,7 +108,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(readResult) shouldBe Status.NOT_FOUND
 
       afterEach()
-    }*/ //can use when we refactor .read with Eithers
+    }
 
   }
 
@@ -124,6 +125,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       val updateDataModel: DataModel = DataModel(
         "testId",
         "Reverend Insanity",
+        "Waris",
         "Waris's favourite book!",
         100000
       )
@@ -175,7 +177,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       afterEach()
     }
 
-    /*"return 404 NotFound for invalid ID" in {
+    "return 404 NotFound for invalid ID" in {
       beforeEach()
 
       val deleteResult: Future[Result] = TestApplicationController.delete("invalidId")(FakeRequest())
@@ -184,7 +186,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
 
       afterEach()
 
-    }*/
+    }
 
   }
 
