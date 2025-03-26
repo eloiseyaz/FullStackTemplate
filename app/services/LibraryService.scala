@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LibraryService @Inject()(connector: LibraryConnector) {
 
   def getGoogleBook(urlOverride: Option[String] = None, search: String, term: String)(implicit ec: ExecutionContext): EitherT[Future, APIError, Book] = {
-    connector.get[GoogleBooksResponse](urlOverride.getOrElse(s"https://www.googleapis.com/books/v1/volumes?q=$search%$term")).map { response =>
+    connector.get[GoogleBooksResponse](urlOverride.getOrElse(s"https://www.googleapis.com/books/v1/volumes?q=$search:$term")).map { response =>
       Book.fromVolume(response.items.head)
     }
   }
