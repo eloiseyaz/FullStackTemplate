@@ -88,4 +88,8 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
         case Left(error) => Status(error.httpResponseStatus)(error.reason)
       })
   }
+
+  def example(): Action[AnyContent] = Action.async {implicit request =>
+    Future.successful(Ok(views.html.example()))
+  }
 }
