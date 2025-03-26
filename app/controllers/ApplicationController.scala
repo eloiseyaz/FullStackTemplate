@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Book, DataModel}
+import models.{APIError, Book, DataModel}
 import models.DataModel.formats
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
@@ -34,8 +34,11 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def read(id: String): Action[AnyContent] = Action.async {
     repositoryService.read(id).map {
-      case Right(book) => Ok(Json.toJson(book))
-      case Left(error) => NotFound(Json.toJson(error))
+      case Right(book) => Ok(views.html.book(book))
+      case Left(error) => error match {
+        case APIError.BadAPIResponse(_, message) =>
+          NotFound(views.html.error(s"Book not found: $message"))
+      }
     }
   }
 
