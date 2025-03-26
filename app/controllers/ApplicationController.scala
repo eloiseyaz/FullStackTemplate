@@ -81,7 +81,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def getAndStoreGoogleBookByISBN(isbn: String): Action[AnyContent] = Action.async {
     implicit request =>
-      libraryService.getGoogleBook(search = isbn, term = "isbn").value.map({
+      libraryService.getGoogleBookByISBN(isbn).value.map({
         case Right(book) =>
           repositoryService.create(book.toDataModel)
           Ok(Json.toJson(book))
