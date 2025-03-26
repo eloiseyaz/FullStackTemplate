@@ -1,4 +1,4 @@
-:root {
+sbt:root {
   --primary-color: #6b4226;
   --secondary-color: #eae0d5;
   --accent-color: #c19a6b;
@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: 'Georgia', serif;
+  font-family: "Book Antiqua", serif;
   color: var(--text-color);
   background-color: var(--light-bg);
   line-height: 1.6;
