@@ -15,7 +15,12 @@ class LibraryConnector @Inject()(ws: WSClient) {
       response
         .map {
           result =>
-            Right(result.json.as[Response])
+            try {
+              Right(result.json.as[Response])
+            }
+            catch {
+              case _: Exception => Left(APIError.NotFoundResponse(404, "Book not found"))
+            }
         }
         .recover { case _: WSResponse =>
           Left(APIError.BadAPIResponse(500, "Could not connect"))
