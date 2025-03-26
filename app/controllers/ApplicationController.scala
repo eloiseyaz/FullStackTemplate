@@ -1,6 +1,6 @@
 package controllers
 
-import models.DataModel
+import models.{Book, DataModel}
 import models.DataModel.formats
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
@@ -13,11 +13,13 @@ import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val repositoryService: RepositoryService, implicit val ec: ExecutionContext, val service: LibraryService) extends BaseController {
+class ApplicationController @Inject()(val controllerComponents: ControllerComponents, val repositoryService: RepositoryService, implicit val ec: ExecutionContext, val libraryService: LibraryService) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.index().map{
-      case Right(item: Seq[DataModel]) => Ok {Json.toJson(item)}
+    repositoryService.index().map {
+      case Right(item: Seq[DataModel]) => Ok {
+        Json.toJson(item)
+      }
       case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
   }
@@ -41,27 +43,29 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def update(id: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
-        repositoryService.update(id, dataModel).map(_ => Accepted {request.body}) //can also consider .read()
+        repositoryService.update(id, dataModel).map(_ => Accepted {
+          request.body
+        }) //can also consider .read()
       case JsError(_) => Future(BadRequest)
     }
   }
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.delete(id).map{
-        case Right(book) => Accepted
-        case Left(error) => NotFound
-      }
+    repositoryService.delete(id).map {
+      case Right(book) => Accepted
+      case Left(error) => NotFound
+    }
   }
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] = Action.async { implicit request =>
-    service.getGoogleBook(search = search, term = term).value.map {
+    libraryService.getGoogleBook(search = search, term = term).value.map {
       case Right(book) => Ok(Json.toJson(book))
       case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
   }
 
   def getDatabaseBook(search: String, field: String): Action[AnyContent] = Action.async { implicit request =>
-    repositoryService.getDatabaseBook(search = search, field = field).map{
+    repositoryService.getDatabaseBook(search = search, field = field).map {
       case Right(book) => Ok(Json.toJson(book))
       case Left(error) => NotFound(Json.toJson(error))
     }
@@ -69,9 +73,19 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
 
   def edit(id: String, field: String, replacement: String): Action[AnyContent] = Action.async {
     implicit request =>
-      repositoryService.edit(id = id, field = field, replacement = replacement).map{
+      repositoryService.edit(id = id, field = field, replacement = replacement).map {
         case Right(book) => Ok(Json.toJson(book))
         case Left(error) => NotFound(Json.toJson(error))
       }
+  }
+
+  def getAndStoreGoogleBookByISBN(isbn: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      libraryService.getGoogleBook(search = isbn, term = "isbn").value.map({
+        case Right(book) =>
+          repositoryService.create(book.toDataModel)
+          Ok(Json.toJson(book))
+        case Left(error) => Status(error.httpResponseStatus)(error.reason)
+      })
   }
 }
