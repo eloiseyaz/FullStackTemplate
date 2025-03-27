@@ -1,15 +1,15 @@
 sbt:root {
-  --primary-color: #6b4226;
-  --secondary-color: #eae0d5;
-  --accent-color: #c19a6b;
-  --text-color: #3c2f2f;
-  --light-bg: #f8f4e9;
+  --primary-color: #693a20;
+  --secondary-color: #e7e4e6;
+  --accent-color: #b98d34;
+  --text-color: #512823;
+  --light-bg: #f3e9d4;
 }
 
 body {
   font-family: "Book Antiqua", serif;
-  color: var(--text-color);
-  background-color: var(--light-bg);
+  color: #e7e4e6;
+  background-color: #b98d34;
   line-height: 1.6;
 }
 
@@ -17,7 +17,7 @@ body {
   max-width: 800px;
   margin: 30px auto;
   padding: 25px;
-  background-color: white;
+  background-color: #512823;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border-left: 5px solid var(--accent-color);
@@ -76,7 +76,7 @@ body {
 }
 
 .button:hover {
-  background-color: var(--accent-color);
+  background-color: #b98d34;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
@@ -85,13 +85,13 @@ body {
   max-width: 800px;
   margin: 30px auto;
   padding: 25px;
-  background-color: #fff8f8;
+  background-color: #512823;
   border-left: 5px solid #e74c3c;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
 .error-message {
-  color: #c0392b;
+  color: #e7e4e6;
   font-weight: bold;
 }
