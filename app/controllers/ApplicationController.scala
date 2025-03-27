@@ -1,12 +1,10 @@
 package controllers
 
-import models.{APIError, Book, DataModel}
+import models.{APIError, DataModel}
 import models.DataModel.formats
-import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
-import repositories.DataRepository
 import services.{LibraryService, RepositoryService}
 
 import javax.inject._
@@ -18,7 +16,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
   def index(): Action[AnyContent] = Action.async { implicit request =>
     repositoryService.index().map {
       case Right(item: Seq[DataModel]) => Ok {
-        Json.toJson(item)
+        views.html.appIndex(item)
       }
       case Left(error) => Status(error.httpResponseStatus)(error.reason)
     }
@@ -48,7 +46,7 @@ class ApplicationController @Inject()(val controllerComponents: ControllerCompon
       case JsSuccess(dataModel, _) =>
         repositoryService.update(id, dataModel).map(_ => Accepted {
           request.body
-        }) //can also consider .read()
+        })
       case JsError(_) => Future(BadRequest)
     }
   }
